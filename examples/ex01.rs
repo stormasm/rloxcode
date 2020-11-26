@@ -1,3 +1,5 @@
+// stand alone rustyline example
+
 use rustyline::error::ReadlineError;
 use rustyline::Editor;
 
