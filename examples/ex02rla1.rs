@@ -43,7 +43,7 @@ fn process_line(
         LineResult::Success(line.to_string())
     } else {
         let line = chomp_newline(line);
-        run_prompt_code(&mut interpreter, &mut line);
+        run_prompt_code(&mut interpreter, &mut line.to_string());
         LineResult::Success(line.to_string())
     }
 }
