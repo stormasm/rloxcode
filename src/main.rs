@@ -51,7 +51,7 @@ fn run_prompt() {
     }
 }
 
-fn run_code(code: &str) {
+fn run_file_code(code: &str) {
     let mut interpreter = Interpreter::new();
     let (tokens, lexer_errors) = lexer::lex(&code);
     print_errors(&lexer_errors);
@@ -79,7 +79,7 @@ fn run_file(filename: &str) {
     let mut code = String::new();
     file.read_to_string(&mut code)
         .expect("Could not read file: ");
-    run_code(&code);
+    run_file_code(&code);
 
 }
 
