@@ -44,7 +44,6 @@ fn process_line(
 }
 
 fn main() {
-    // `()` can be used when no completer is required
     let mut rl = Editor::<()>::new();
     if rl.load_history("history.txt").is_err() {
         println!("No previous history.");
@@ -54,18 +53,10 @@ fn main() {
         match readline {
             Ok(line) => {
                 rl.add_history_entry(line.as_str());
-
-                // process_line(&line);
-
-
                 let _crline = match convert_rustyline_result_to_string(Ok(line)) {
                     LineResult::Success(s) => process_line(&s),
                     x => x,
                 };
-
-
-
-                // println!("Line: {}", line);
             }
             Err(ReadlineError::Interrupted) => {
                 println!("CTRL-C");
