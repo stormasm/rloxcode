@@ -18,6 +18,28 @@ use std::io;
 use std::io::prelude::*;
 use std::io::Write;
 
+fn run_prompt_code(interpreter: &mut interpreter::Interpreter, buffer: &String) {
+    let (tokens, lexer_errors) = lexer::lex(&buffer);
+    print_errors(&lexer_errors);
+
+    let (statements, parser_errors) = parser::parse(&tokens);
+    print_errors(&parser_errors);
+
+    if !lexer_errors.is_empty() || !parser_errors.is_empty() {
+        std::process::exit(64);
+    }
+
+    let scopes = resolver::resolve(&statements);
+    if scopes.is_err() {
+        std::process::exit(64);
+    }
+    interpreter.add_scopes(scopes.unwrap());
+
+    interpreter
+        .interpret(statements)
+        .expect("Interpreter error: ");
+}
+
 fn run_prompt() {
     let mut interpreter = Interpreter::new();
     loop {
@@ -25,27 +47,7 @@ fn run_prompt() {
         io::stdout().flush().expect("Could not write to stdout");
         let mut buffer = String::new();
         match io::stdin().read_line(&mut buffer) {
-            Ok(_) => {
-                let (tokens, lexer_errors) = lexer::lex(&buffer);
-                print_errors(&lexer_errors);
-
-                let (statements, parser_errors) = parser::parse(&tokens);
-                print_errors(&parser_errors);
-
-                if !lexer_errors.is_empty() || !parser_errors.is_empty() {
-                    std::process::exit(64);
-                }
-
-                let scopes = resolver::resolve(&statements);
-                if scopes.is_err() {
-                    std::process::exit(64);
-                }
-                interpreter.add_scopes(scopes.unwrap());
-
-                interpreter
-                    .interpret(statements)
-                    .expect("Interpreter error: ");
-            }
+            Ok(_) => run_prompt_code(&mut interpreter, &mut buffer),
             Err(error) => eprintln!("error reading line: {}", error),
         }
     }
@@ -80,7 +82,6 @@ fn run_file(filename: &str) {
     file.read_to_string(&mut code)
         .expect("Could not read file: ");
     run_file_code(&code);
-
 }
 
 fn print_errors(errors: &Vec<LoxError>) {
