@@ -36,7 +36,7 @@ fn convert_rustyline_result_to_string(input: Result<String, ReadlineError>) -> L
 }
 
 fn process_line(
-    mut interpreter: &rlox::interpreter::Interpreter,
+    interpreter: rlox::interpreter::Interpreter,
     line: &str,
 ) -> LineResult {
     if line.trim() == "" {
