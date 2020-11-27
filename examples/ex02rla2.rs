@@ -36,7 +36,7 @@ fn convert_rustyline_result_to_string(input: Result<String, ReadlineError>) -> L
 }
 
 fn process_line(
-    interpreter: &Interpreter,
+    mut interpreter: &rlox::interpreter::Interpreter,
     line: &str,
 ) -> LineResult {
     if line.trim() == "" {
@@ -60,7 +60,7 @@ fn main() {
             Ok(line) => {
                 rl.add_history_entry(line.as_str());
                 let _crline = match convert_rustyline_result_to_string(Ok(line)) {
-                    LineResult::Success(s) => process_line(&interpreter,&s),
+                    LineResult::Success(s) => process_line(&mut interpreter,&s),
                     x => x,
                 };
             }
