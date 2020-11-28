@@ -4,6 +4,11 @@ use rustyline::Editor;
 use rlox::interpreter::Interpreter;
 use rlox::{run_prompt_code};
 
+use rlox::{lexer, parser, resolver, print_errors};
+
+
+
+
 #[derive(Debug)]
 pub enum LineResult {
     Success(String),
@@ -36,14 +41,49 @@ fn convert_rustyline_result_to_string(input: Result<String, ReadlineError>) -> L
 }
 
 fn process_line(
-    interpreter: rlox::interpreter::Interpreter,
+    interpreter: &mut rlox::interpreter::Interpreter,
     line: &str,
 ) -> LineResult {
     if line.trim() == "" {
         LineResult::Success(line.to_string())
     } else {
         let line = chomp_newline(line);
-        run_prompt_code(&mut interpreter, &mut line.to_string());
+
+//      run_prompt_code(&mut interpreter, &mut line.to_string());
+
+
+
+
+        let (tokens, lexer_errors) = lexer::lex(&line);
+        print_errors(&lexer_errors);
+
+        let (statements, parser_errors) = parser::parse(&tokens);
+        print_errors(&parser_errors);
+
+        if !lexer_errors.is_empty() || !parser_errors.is_empty() {
+            std::process::exit(64);
+        }
+
+        let scopes = resolver::resolve(&statements);
+        if scopes.is_err() {
+            std::process::exit(64);
+        }
+        interpreter.add_scopes(scopes.unwrap());
+
+        interpreter
+            .interpret(statements)
+            .expect("Interpreter error: ");
+
+
+
+
+
+
+
+
+
+
+
         LineResult::Success(line.to_string())
     }
 }
