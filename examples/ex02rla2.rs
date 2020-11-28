@@ -48,12 +48,6 @@ fn process_line(
         LineResult::Success(line.to_string())
     } else {
         let line = chomp_newline(line);
-
-//      run_prompt_code(&mut interpreter, &mut line.to_string());
-
-
-
-
         let (tokens, lexer_errors) = lexer::lex(&line);
         print_errors(&lexer_errors);
 
@@ -73,16 +67,6 @@ fn process_line(
         interpreter
             .interpret(statements)
             .expect("Interpreter error: ");
-
-
-
-
-
-
-
-
-
-
 
         LineResult::Success(line.to_string())
     }
