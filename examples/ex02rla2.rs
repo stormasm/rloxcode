@@ -2,7 +2,7 @@ use rustyline::error::ReadlineError;
 use rustyline::Editor;
 
 use rlox::interpreter::Interpreter;
-use rlox::{run_prompt_code};
+// use rlox::{run_prompt_code};
 
 use rlox::{lexer, parser, resolver, print_errors};
 
